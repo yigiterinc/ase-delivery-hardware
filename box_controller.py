@@ -1,6 +1,6 @@
-import authentication_controller
-import led_controller
-import photo_resistor_controller
+from communication_controller import CommunicationController
+from led_controller import LEDController
+from photo_resistor_controller import PhotoResistorController
 
 from math import isclose
 from time import time_ns
@@ -22,9 +22,19 @@ class BoxController:
         self.photo_res = photo_res
         self.open_secs = 0
 
-        # Setup GPIO pins
-        led_controller.init([led_green, led_red])
-        photo_resistor_controller.init(photo_res)
+        # Setup controllers for LEDs and photoresistor
+        self.led_controller = LEDController([led_green, led_red])
+        self.photo_resistor_controller = PhotoResistorController(photo_res)
+
+        # Setup communication controller to perform authentication
+        params = {
+            "mode": "cors",
+            "cache": "no-chache",
+            "credentials": "include",
+            "redirect": "follow",
+            "referrerPolicy": "origin-when-cross-origin"
+        }
+        self.communication_controller = CommunicationController(params)
 
 
     def __unlock(self) -> None:
@@ -34,18 +44,18 @@ class BoxController:
 
     def __lock(self) -> None:
         # As long as the brightness level does not embodies a closed box
-        while not isclose(photo_resistor_controller.read_brightness(), brightness_closed):
+        while not isclose(self.photo_resistor_controller.read_brightness(), brightness_closed):
             # Check if allowed opening time is exceeded and if yes toggle red LED
             if time_ns() - self.open_secs > opening_secs:
-                led_controller.toggle(self.led_red, led_blinking_secs)   
+                self.led_controller.toggle(self.led_red, led_blinking_secs)   
 
 
     def handle_new_customer(self, user_id : int) -> None:
         # Check if customer is authenticated and if yes toggle green LED
-        if authentication_controller.authenticate(user_id):
-            led_controller.toggle(self.led_green, self.led_confirmation_secs)
+        if self.communication_controller.authenticate(user_id):
+            self.led_controller.toggle(self.led_green, self.led_confirmation_secs)
             self.__unlock()
             self.__lock()
         # Otherwise toggle red LED
         else:
-            led_controller.toggle(self.led_red, self.led_confirmation_secs) 
+            self.led_controller.toggle(self.led_red, self.led_confirmation_secs) 

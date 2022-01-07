@@ -52,7 +52,15 @@ class CommunicationController:
         else:
             raise ValueError("CommunicationController._getXSRFToken(): Request unsuccessful")
 
-
-    def authenticate(self, user_id : int) -> bool:
+    
+    def authenticate(self, user_id : string) -> bool:
         # Perform basic authentication by using user_id and box_id
         return self._httpRequest('POST', "<URL>", self.params, self._getBaseHeaders, (user_id, self.box_id), True).status_code == 200
+    
+
+    """
+    def authenticate(self, user_id : string) -> bool:
+        with open("user_ids.json") as user_ids_json:
+            user_ids = json.load(user_ids_json)
+            return {"id": user_id.strip()} in user_ids
+    """

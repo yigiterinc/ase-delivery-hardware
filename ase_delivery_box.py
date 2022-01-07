@@ -12,17 +12,17 @@ def main() -> None:
     
     # Define GPIO outputs, namely LEDs
     led_red = 38
-    led_green = 4
+    led_green = 40
     photo_res = 36
 
     # Initialize box controller
-    box_controller = BoxController()
+    box_controller = BoxController(led_green, led_red, photo_res)
 
     # Initialize RFID reader
     reader = SimpleMFRC522()
 
     # Load configuration file
-    id, name, address = None
+    id, name, address = '', '', ''
     with open("config.json") as config_json:
         data = json.load(config_json)
         box_id = data["ID"]
@@ -37,7 +37,7 @@ def main() -> None:
             print(f"Welcome to the {box_name} {box_id} of {box_address}.\nPlease scan your RFID card.")
 
             # Read RFID card
-            r_, rfid_user_id = reader.read()
+            _, rfid_user_id = reader.read()
 
             # Authentication
             box_controller.handle_new_customer(rfid_user_id)

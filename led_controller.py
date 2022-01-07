@@ -3,6 +3,7 @@ import RPi.GPIO as GPIO
 from time import sleep
 from typing import List
 
+
 class LEDController:
     def __init__(self, gpios : List[int]) -> None:
         # Check if GPIO mode is set
@@ -10,7 +11,7 @@ class LEDController:
             raise RuntimeError("LEDController.__init__(): LEDs were not initialized since GPIO mode is not set!")
     
         # Setup GPIOs as output with initial state LOW
-        GPIO.setup(gpios, GPIO.OUT, GPIO.LOW)
+        GPIO.setup(gpios, GPIO.OUT, initial=GPIO.LOW)
         self.leds = gpios
 
     
@@ -35,5 +36,6 @@ class LEDController:
     def toggle(self, led : int, secs : int):
         # Toggle LED for secs seconds
         self.turnOn(led)
-        sleep(secs)
+        sleep(secs / 2.0)
         self.turnOff(led)
+        sleep(secs / 2.0)

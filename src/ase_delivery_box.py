@@ -23,7 +23,7 @@ def main() -> None:
 
     # Load configuration file
     id, name, address = '', '', ''
-    with open("config.json") as config_json:
+    with open("resources/config.json") as config_json:
         data = json.load(config_json)
         box_id = data["ID"]
         box_name = data["NAME"]

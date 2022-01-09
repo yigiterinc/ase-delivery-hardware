@@ -10,7 +10,7 @@ class CommunicationController:
     def __init__(self, params : Dict) -> None:
         
         # Store box_id for authentication
-        with open("config.json") as config_json:
+        with open("resources/config.json") as config_json:
             self.box_id = json.load(config_json)["ID"]
 
         # Store list of end points
@@ -52,15 +52,18 @@ class CommunicationController:
         else:
             raise ValueError("CommunicationController._getXSRFToken(): Request unsuccessful")
 
-    
+    """
     def authenticate(self, user_id : string) -> bool:
         # Perform basic authentication by using user_id and box_id
         return self._httpRequest('POST', "<URL>", self.params, self._getBaseHeaders, (user_id, self.box_id), True).status_code == 200
-    
-
     """
+
+
     def authenticate(self, user_id : string) -> bool:
-        with open("user_ids.json") as user_ids_json:
+        with open("resources/user_ids.json") as user_ids_json:
             user_ids = json.load(user_ids_json)
             return {"id": user_id.strip()} in user_ids
-    """
+
+
+    def sendNotificationToCustomer(self, id : string) -> bool:
+        return self._httpRequest('POST', "<URL>", self.params, self._getBaseHeaders, (id, self.box_id)).status_code == 200 

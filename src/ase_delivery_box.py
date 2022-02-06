@@ -37,10 +37,16 @@ def main() -> None:
             print(f"Welcome to the {box_name} {box_id} of {box_address}.\nPlease scan your RFID card.")
 
             # Read RFID card
-            _, rfid_user_id = reader.read()
+            rfid_user_id = None
+            while True:
+                _, rfid_user_id = reader.read()
+                if rfid_user_id != '':
+                    break
+                print("\nPlease scan your card again!")
+
 
             # Authentication
-            box_controller.handle_new_customer(rfid_user_id)
+            box_controller.handle_new_customer(rfid_user_id.split()[0])
             
     # Handle keyboard interrupt and clean GPIOs
     except KeyboardInterrupt:
